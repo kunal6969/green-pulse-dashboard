@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Green Pulse Dashboard</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS JIT CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- External libraries for chart exporting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        /* Define custom properties for colors and styles used in Tailwind config and components */
+        :root {
+            --bg-primary: #0A1212;
+            --bg-secondary: #101C1C;
+            --card-bg: #1A2929;
+            --text-primary: #E0E7FF;
+            --text-secondary: #A8B2D1;
+            --primary: #68D8B1;
+            --primary-focus: #82E9C4;
+            --secondary: #F7C948;
+            --border-color: rgba(104, 216, 177, 0.2);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --shadow-card: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            --shadow-glow-primary: 0 0 15px rgba(104, 216, 177, 0.4);
+        }
+
+        body {
+            /* Fallback for browsers that don't support the JS config */
+            background-color: var(--bg-primary);
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-focus);
+        }
+        
+        /* Keyframe Animations from component classNames */
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .animate-fade-in {
+            animation: fade-in 0.5s ease-out forwards;
+        }
+
+        @keyframes fade-in-down {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-down {
+            animation: fade-in-down 0.5s ease-out forwards;
+        }
+
+        @keyframes slide-and-fade-in {
+            from { opacity: 0; transform: translateX(-15px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .animate-slide-and-fade-in {
+            animation: slide-and-fade-in 0.4s ease-out forwards;
+        }
+
+        @keyframes pulse-bg {
+            0%, 100% { background-color: rgba(239, 68, 68, 0.1); }
+            50% { background-color: rgba(239, 68, 68, 0.2); }
+        }
+        .animate-pulse-bg {
+            animation: pulse-bg 2s infinite;
+        }
+        
+        @keyframes subtle-pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(104, 216, 177, 0.4); }
+            50% { box-shadow: 0 0 25px rgba(104, 216, 177, 0.6); }
+        }
+        .animate-subtle-pulse-glow {
+            animation: subtle-pulse-glow 2.5s infinite;
+        }
+
+        @keyframes bob-up {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        .animate-bob-up {
+            animation: bob-up 0.7s ease-in-out;
+        }
+
+        @keyframes bob-down {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(5px); }
+        }
+        .animate-bob-down {
+            animation: bob-down 0.7s ease-in-out;
+        }
+
+        /* For datetime-local input icon color */
+        input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+            filter: invert(0.8) sepia(0.3) saturate(5) hue-rotate(100deg);
+        }
+    </style>
+    <script>
+        // Configure Tailwind CSS JIT
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'bg-primary': 'var(--bg-primary)',
+                        'bg-secondary': 'var(--bg-secondary)',
+                        'card-bg': 'var(--card-bg)',
+                        'text-primary': 'var(--text-primary)',
+                        'text-secondary': 'var(--text-secondary)',
+                        'primary': 'var(--primary)',
+                        'primary-focus': 'var(--primary-focus)',
+                        'secondary': 'var(--secondary)',
+                        'border-color': 'var(--border-color)',
+                        'glass-border': 'var(--glass-border)',
+                    },
+                    fontFamily: {
+                        outfit: ['Outfit', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'card': 'var(--shadow-card)',
+                        'glow-primary': 'var(--shadow-glow-primary)',
+                    },
+                }
+            }
+        }
+    </script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="bg-bg-primary">
+    <div id="root"></div>
+    <script type="importmap">
+    {
+      "imports": {
+        "recharts": "https://aistudiocdn.com/recharts@^3.2.0",
+        "react/": "https://aistudiocdn.com/react@^19.1.1/",
+        "react": "https://aistudiocdn.com/react@^19.1.1",
+        "@google/genai": "https://aistudiocdn.com/@google/genai@^1.19.0",
+        "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
+        "lucide-react": "https://aistudiocdn.com/lucide-react@^0.543.0"
+      }
+    }
+    </script>
+    <script type="module" src="/index.tsx"></script>
+</body>
+</html>

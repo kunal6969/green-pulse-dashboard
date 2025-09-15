@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  # Backend API Service
+  backend:
+    build:
+      context: ./green_pulse_backend
+      dockerfile: Dockerfile
+    container_name: green-pulse-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+    volumes:
+      # Mount the database and model files to persist data
+      - ./green_pulse_backend/gru_predictions.sqlite:/app/gru_predictions.sqlite
+      - ./green_pulse_backend/model:/app/model
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # Frontend Service  
+  frontend:
+    build:
+      context: ./green-pulse-frontend
+      dockerfile: Dockerfile
+    container_name: green-pulse-frontend
+    ports:
+      - "80:80"
+    environment:
+      # Set the backend API URL for the frontend
+      - VITE_API_BASE_URL=http://localhost:8000
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+networks:
+  default:
+    driver: bridge
+
+volumes:
+  # Optional: Create named volumes for persistent data
+  model_data:
+  database_data:
