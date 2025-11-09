@@ -7,6 +7,8 @@
 
 Green Pulse is a sophisticated, real-time energy monitoring and management web application designed for facility managers and campus administrators. It transforms raw energy data into actionable insights through data visualization, predictive analytics using GRU neural networks, and gamification elements to promote sustainable energy practices.
 
+The website takes 2-5 minutes in the starting to load the data from the backend because the backend of the website is being hosted on render which has a cooldown period of 15 minutes.
+
 ## 🌟 Key Features
 
 ### 🎯 Core Functionality
@@ -329,13 +331,6 @@ uvicorn main:app --host 0.0.0.0 --port 8000
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🆘 Support
-
-For support, email support@greenpulse.com or create an issue in the GitHub repository.
 
 ## 🙏 Acknowledgments
 
